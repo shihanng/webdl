@@ -49,15 +49,42 @@ Executing the following
 $ ./webdl https://developer.mozilla.org/en-US/ https://www.google.com
 ```
 
-downloads the contents of each web pages into separate HTML files and store them into separate directories based on their host name.
+downloads the contents and assets of each web pages into separate HTML files and store them into separate directories based on their host name.
 
-```
-tree
+```console
 ├── developer.mozilla.org
-│   └── en-US_.html
+│   ├── apple-touch-icon.0ea0fa02.png
+│   ├── en-US_.html
+│   ├── favicon-48x48.97046865.png
+│   ├── manifest.56b1cedc.json
+│   └── static
+│       ├── css
+│       │   └── main.20e8790b.chunk.css
+│       ├── js
+│       │   ├── 2.c6ebdd97.chunk.js
+│       │   ├── ga.js
+│       │   ├── main.f32a715f.chunk.js
+│       │   └── runtime-main.6526a4ac.js
+│       └── media
+│           └── ZillaSlab-Bold.subset.0beac26b.woff2
 └── www.google.com
-    └── index.html
+    ├── images
+    │   └── branding
+    │       └── googlelogo
+    │           └── 1x
+    │               └── googlelogo_white_background_color_272x92dp.png
+    └── index.html
 ```
+
+Using a simple web server, we can view the downloaded HTML together with its assets. E.g.
+
+```console
+$ cd developer.mozilla.org
+$ python -m http.server
+```
+
+and visit <http://localhost:8000/>.
+
 
 ### Using Docker
 
