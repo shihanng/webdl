@@ -27,8 +27,9 @@ $ docker build -t shihanng/webdl:0.1 .
 ## Usage
 
 ```console
-Archive web pages to disk.  When <url1> is www.google.com,
-this tool will download the page and save it as www.google.com.html.
+Archive web pages to disk.  When <url1> is https://www.google.com,
+this tool will download the page and save it as index.html
+in www.google.com/ directory.
 
 Usage:
   webdl [options] <url1> <url2> ...
