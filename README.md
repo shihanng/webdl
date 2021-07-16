@@ -46,16 +46,17 @@ Options:
 Executing the following
 
 ```
-$ ./webdl https://www.google.com https://twitter.com https://github.com
+$ ./webdl https://developer.mozilla.org/en-US/ https://www.google.com
 ```
 
-downloads the contents of each web pages into separate HTML files.
+downloads the contents of each web pages into separate HTML files and store them into separate directories based on their host name.
 
 ```
-$ ls -l
-github.com.html
-twitter.com.html
-www.google.com.html
+tree
+├── developer.mozilla.org
+│   └── en-US_.html
+└── www.google.com
+    └── index.html
 ```
 
 ### Using Docker
