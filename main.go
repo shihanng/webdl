@@ -54,6 +54,8 @@ Options:`)
 
 	c.OnRequest(s.VisitLog())
 	c.OnResponse(s.SaveHTML())
+	c.OnHTML("img[src], script[src], source[src]", s.SaveAsset("src"))
+	c.OnHTML("link[href]", s.SaveAsset("href"))
 	if *metadata {
 		c.OnHTML("img[src]", s.CountImage())
 		c.OnHTML("a[href]", s.CountLink())
