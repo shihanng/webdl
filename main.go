@@ -25,6 +25,7 @@ func main() {
 
 	fs := flag.NewFlagSet("", flag.ExitOnError)
 	debug := fs.Bool("debug", false, "show debug log")
+	metadata := fs.Bool("metadata", false, "show metadata")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		logger.WithError(err).Fatal("failed to parse flags")
@@ -42,8 +43,10 @@ func main() {
 
 	c.OnRequest(s.VisitLog())
 	c.OnResponse(s.SaveHTML())
-	c.OnHTML("img[src]", s.CountImage())
-	c.OnHTML("a[href]", s.CountLink())
+	if *metadata {
+		c.OnHTML("img[src]", s.CountImage())
+		c.OnHTML("a[href]", s.CountLink())
+	}
 	c.OnError(s.HandleError())
 
 	// Create request queue.
@@ -67,7 +70,9 @@ func main() {
 		logger.WithError(err).Fatal("error occurred during scrapping")
 	}
 
-	for _, p := range s.Pages {
-		fmt.Printf("%v\n\n", p)
+	if *metadata {
+		for _, p := range s.Pages {
+			fmt.Printf("%v\n\n", p)
+		}
 	}
 }
