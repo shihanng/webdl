@@ -31,6 +31,8 @@ func main() {
 
 	c.OnRequest(s.VisitLog())
 	c.OnResponse(s.SaveHTML())
+	c.OnHTML("img[src]", s.CountImage())
+	c.OnHTML("a[href]", s.CountLink())
 	c.OnError(s.HandleError())
 
 	// Create request queue.

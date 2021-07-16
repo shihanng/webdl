@@ -67,6 +67,20 @@ func (s *Scraper) SaveHTML() colly.ResponseCallback {
 	}
 }
 
+func (s *Scraper) CountImage() colly.HTMLCallback {
+	return func(e *colly.HTMLElement) {
+		site := urlToFilename(e.Request.URL)
+		s.Pages[site].NumImages += 1
+	}
+}
+
+func (s *Scraper) CountLink() colly.HTMLCallback {
+	return func(e *colly.HTMLElement) {
+		site := urlToFilename(e.Request.URL)
+		s.Pages[site].NumLinks += 1
+	}
+}
+
 func (s *Scraper) Err() error {
 	return s.err
 }
