@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/hashicorp/go-multierror"
 )
 
 type Scraper struct {
@@ -14,9 +15,17 @@ func NewScraper() *Scraper {
 	return &Scraper{}
 }
 
+func (s *Scraper) HandleError() colly.ErrorCallback {
+	return func(_ *colly.Response, err error) {
+		s.err = multierror.Append(s.err, err)
+	}
+}
+
 func (s *Scraper) SaveHTML() colly.ResponseCallback {
 	return func(r *colly.Response) {
-		s.err = r.Save(urlToFilename(r.Request.URL))
+		if err := r.Save(urlToFilename(r.Request.URL)); err != nil {
+			s.err = multierror.Append(s.err, err)
+		}
 	}
 }
 
