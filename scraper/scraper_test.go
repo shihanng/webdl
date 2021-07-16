@@ -8,14 +8,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_urlToFilename(t *testing.T) {
+func TestURLToFilename(t *testing.T) {
 	tests := []struct {
 		rawURL   string
 		expected string
 	}{
 		{
 			rawURL:   "https://pkg.go.dev/net/url#URL",
-			expected: "pkg.go.dev.html",
+			expected: "pkg.go.dev/net_url.html",
+		},
+		{
+			rawURL:   "https://pkg.go.dev/",
+			expected: "pkg.go.dev/index.html",
 		},
 	}
 	for _, tt := range tests {
