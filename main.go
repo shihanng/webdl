@@ -48,6 +48,10 @@ Options:`)
 	}
 
 	args := fs.Args()
+	if len(args) == 0 {
+		fs.Usage()
+		os.Exit(1)
+	}
 
 	s := scraper.NewScraper(logger)
 
