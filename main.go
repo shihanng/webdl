@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -21,9 +22,19 @@ func main() {
 		Level:   log.ErrorLevel,
 		Handler: cli.New(os.Stderr),
 	}
-	logger.Level = log.DebugLevel
 
-	args := os.Args[1:]
+	fs := flag.NewFlagSet("", flag.ExitOnError)
+	debug := fs.Bool("debug", false, "show debug log")
+
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logger.WithError(err).Fatal("failed to parse flags")
+	}
+
+	if *debug {
+		logger.Level = log.DebugLevel
+	}
+
+	args := fs.Args()
 
 	s := scraper.NewScraper(logger)
 
