@@ -24,6 +24,18 @@ func main() {
 	}
 
 	fs := flag.NewFlagSet("", flag.ExitOnError)
+
+	fs.Usage = func() {
+		fmt.Println(`Archive web pages to disk.  When <url1> is www.google.com,
+this tool will download the page and save it as www.google.com.html.
+
+Usage:
+  webdl [options] <url1> <url2> ...
+
+Options:`)
+		fs.PrintDefaults()
+	}
+
 	debug := fs.Bool("debug", false, "show debug log")
 	metadata := fs.Bool("metadata", false, "show metadata")
 
@@ -36,6 +48,10 @@ func main() {
 	}
 
 	args := fs.Args()
+	if len(args) == 0 {
+		fs.Usage()
+		os.Exit(1)
+	}
 
 	s := scraper.NewScraper(logger)
 
