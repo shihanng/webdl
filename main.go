@@ -8,13 +8,7 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/queue"
 	"github.com/shihanng/webdl/scraper"
-)
-
-const (
-	nConsumer    = 2
-	maxQueueSize = 10000
 )
 
 func main() {
@@ -65,21 +59,11 @@ Options:`)
 	}
 	c.OnError(s.HandleError())
 
-	// Create request queue.
-	q, err := queue.New(nConsumer, &queue.InMemoryQueueStorage{MaxSize: maxQueueSize})
-	if err != nil {
-		logger.WithError(err).Fatal("failed to create queue")
-	}
-
-	// Enqueue URLs to visit.
+	// Visits all URLs
 	for _, url := range args {
-		if err := q.AddURL(url); err != nil {
-			logger.WithError(err).Fatal("failed to enqueue")
+		if err := c.Visit(url); err != nil {
+			logger.WithError(err).Fatal("failed to visit")
 		}
-	}
-
-	if err := q.Run(c); err != nil {
-		logger.WithError(err).Fatal("failed to consume queue")
 	}
 
 	if err := s.Err(); err != nil {
