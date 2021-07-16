@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"os"
 
 	"github.com/apex/log"
@@ -20,9 +22,20 @@ func main() {
 		Level:   log.ErrorLevel,
 		Handler: cli.New(os.Stderr),
 	}
-	logger.Level = log.DebugLevel
 
-	args := os.Args[1:]
+	fs := flag.NewFlagSet("", flag.ExitOnError)
+	debug := fs.Bool("debug", false, "show debug log")
+	metadata := fs.Bool("metadata", false, "show metadata")
+
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logger.WithError(err).Fatal("failed to parse flags")
+	}
+
+	if *debug {
+		logger.Level = log.DebugLevel
+	}
+
+	args := fs.Args()
 
 	s := scraper.NewScraper(logger)
 
@@ -30,6 +43,10 @@ func main() {
 
 	c.OnRequest(s.VisitLog())
 	c.OnResponse(s.SaveHTML())
+	if *metadata {
+		c.OnHTML("img[src]", s.CountImage())
+		c.OnHTML("a[href]", s.CountLink())
+	}
 	c.OnError(s.HandleError())
 
 	// Create request queue.
@@ -51,5 +68,11 @@ func main() {
 
 	if err := s.Err(); err != nil {
 		logger.WithError(err).Fatal("error occurred during scrapping")
+	}
+
+	if *metadata {
+		for _, p := range s.Pages {
+			fmt.Printf("%v\n\n", p)
+		}
 	}
 }
