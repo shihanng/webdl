@@ -42,13 +42,6 @@ func NewScraper(logger *log.Logger) *Scraper {
 
 func (s *Scraper) VisitLog() colly.RequestCallback {
 	return func(r *colly.Request) {
-		site := urlToFilename(r.URL)
-
-		s.Pages[site] = &Page{
-			Site:      site,
-			LastFetch: time.Now(),
-		}
-
 		s.log.WithField("url", r.URL.String()).Debug("visiting")
 	}
 }
@@ -61,6 +54,13 @@ func (s *Scraper) HandleError() colly.ErrorCallback {
 
 func (s *Scraper) SaveHTML() colly.ResponseCallback {
 	return func(r *colly.Response) {
+		site := urlToSite(r.Request.URL)
+
+		s.Pages[site] = &Page{
+			Site:      site,
+			LastFetch: time.Now(),
+		}
+
 		if err := r.Save(urlToFilename(r.Request.URL)); err != nil {
 			s.err = multierror.Append(s.err, err)
 		}
@@ -69,7 +69,7 @@ func (s *Scraper) SaveHTML() colly.ResponseCallback {
 
 func (s *Scraper) CountImage() colly.HTMLCallback {
 	return func(e *colly.HTMLElement) {
-		site := urlToFilename(e.Request.URL)
+		site := urlToSite(e.Request.URL)
 		if _, ok := s.Pages[site]; ok {
 			s.Pages[site].NumImages += 1
 		}
@@ -78,7 +78,7 @@ func (s *Scraper) CountImage() colly.HTMLCallback {
 
 func (s *Scraper) CountLink() colly.HTMLCallback {
 	return func(e *colly.HTMLElement) {
-		site := urlToFilename(e.Request.URL)
+		site := urlToSite(e.Request.URL)
 		if _, ok := s.Pages[site]; ok {
 			s.Pages[site].NumLinks += 1
 		}
@@ -89,6 +89,10 @@ func (s *Scraper) Err() error {
 	return s.err
 }
 
+func urlToSite(u *url.URL) string {
+	return u.Host
+}
+
 func urlToFilename(u *url.URL) string {
-	return u.Host + `.html`
+	return urlToSite(u) + `.html`
 }
