@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/apex/log"
@@ -51,5 +52,9 @@ func main() {
 
 	if err := s.Err(); err != nil {
 		logger.WithError(err).Fatal("error occurred during scrapping")
+	}
+
+	for _, p := range s.Pages {
+		fmt.Printf("%v\n\n", p)
 	}
 }
