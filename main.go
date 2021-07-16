@@ -20,8 +20,9 @@ func main() {
 	fs := flag.NewFlagSet("", flag.ExitOnError)
 
 	fs.Usage = func() {
-		fmt.Println(`Archive web pages to disk.  When <url1> is www.google.com,
-this tool will download the page and save it as www.google.com.html.
+		fmt.Println(`Archive web pages to disk.  When <url1> is https://www.google.com,
+this tool will download the page and save it as index.html
+in www.google.com/ directory.
 
 Usage:
   webdl [options] <url1> <url2> ...
@@ -53,6 +54,8 @@ Options:`)
 
 	c.OnRequest(s.VisitLog())
 	c.OnResponse(s.SaveHTML())
+	c.OnHTML("img[src], script[src], source[src]", s.SaveAsset("src"))
+	c.OnHTML("link[href]", s.SaveAsset("href"))
 	if *metadata {
 		c.OnHTML("img[src]", s.CountImage())
 		c.OnHTML("a[href]", s.CountLink())
