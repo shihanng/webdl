@@ -3,16 +3,24 @@ package scraper
 import (
 	"net/url"
 
+	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
 	"github.com/hashicorp/go-multierror"
 )
 
 type Scraper struct {
+	log *log.Logger
 	err error
 }
 
-func NewScraper() *Scraper {
-	return &Scraper{}
+func NewScraper(logger *log.Logger) *Scraper {
+	return &Scraper{log: logger}
+}
+
+func (s *Scraper) VisitLog() colly.RequestCallback {
+	return func(r *colly.Request) {
+		s.log.WithField("url", r.URL.String()).Debug("visiting")
+	}
 }
 
 func (s *Scraper) HandleError() colly.ErrorCallback {
